@@ -276,7 +276,11 @@ void TreePrinter::printSignature(const FunctionDeclaration *node) {
 }
 
 void TreePrinter::doPrint(const MemberDeclaration *node) {
-    out_ << *node->type() << ' ' << node->identifier() << ';';
+    //if (node->identifier().contains("xmm")) {
+    //  out_ << "float*" << ' ' << node->identifier() << ';' << " // or double* ?"; // check later if is correct
+    //} else {
+      out_ << *node->type() << ' ' << node->identifier() << ';';
+    //}
 }
 
 void TreePrinter::doPrint(const StructTypeDeclaration *node) {
@@ -294,13 +298,18 @@ void TreePrinter::doPrint(const StructTypeDeclaration *node) {
 void TreePrinter::doPrint(const VariableDeclaration *node) {
     printComment(node);
 
-    out_ << *node->type() << ' ';
+    if (node->identifier().contains("xmm"))
+      out_ << "float*" << ' ';
+    else
+      out_ << *node->type() << ' ';
     print(node->variableIdentifier());
     if (node->initialValue()) {
         out_ << " = ";
         print(node->initialValue());
     }
     out_ << ';';
+    //if (node->identifier().contains("xmm"))
+    //  out_ << " // could be float, short array of float[4]";
 }
 
 void TreePrinter::doPrint(const Expression *node) {

@@ -22,6 +22,10 @@
 // along with SmartDec decompiler.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 #include "X86InstructionAnalyzer.h"
 
 #include <boost/range/size.hpp>
@@ -1213,7 +1217,268 @@ public:
                 ];
                 break;
             }
+            case UD_Imovss: {
+              auto operand0 = operand(0);
+              auto operand1 = operand(1);
+
+              // TODO: check size of memory or just assume 4 bytes (since that makes sense here)
+              // TODO: zero register if not register -> check for register or memory on each operand
+              if (operand0.size() == operand1.size()) {
+                  _[std::move(operand0) ^= std::move(operand1)];
+              } else if (operand0.size() > operand1.size()) {
+                  /* For example, move of a small constant to a big register. */
+                  _[std::move(operand0) ^= zero_extend(std::move(operand1))];
+              } else {
+                  /* Happens in assignments to segment registers. Known bug of udis86. */
+                  _[std::move(operand0) ^= truncate(std::move(operand1))];
+              }
+              break;
+            }
+            case UD_Imulss: {
+              if (!hasOperand(1)) {
+//                  /* One operand. */
+//                  /* result2:result1 = arg0 * op0 */
+//                  const core::arch::Register *arg0;
+//                  const core::arch::Register *result1;
+//                  const core::arch::Register *result2;
+//
+//                  auto operand0 = operand(0);
+//                  switch (operand0.size()) {
+//                      case 8:
+//                          arg0 = X86Registers::al();
+//                          result1 = X86Registers::ax();
+//                          result2 = 0;
+//                          break;
+//                      case 16:
+//                          arg0 = X86Registers::ax();
+//                          result1 = X86Registers::ax();
+//                          result2 = X86Registers::dx();
+//                          break;
+//                      case 32:
+//                          arg0 = X86Registers::eax();
+//                          result1 = X86Registers::eax();
+//                          result2 = X86Registers::edx();
+//                          break;
+//                      case 64:
+//                          arg0 = X86Registers::rax();
+//                          result1 = X86Registers::rax();
+//                          result2 = X86Registers::rdx();
+//                          break;
+//                      default:
+//                          throw core::irgen::InvalidInstructionException(tr("Strange argument size"));
+//                  }
+
+//                  if (result1->size() == arg0->size()) {
+//                      _[regizter(result1) ^= regizter(arg0) * std::move(operand0)];
+//                  } else {
+//                      _[regizter(result1) ^= sign_extend(regizter(arg0)) * sign_extend(std::move(operand0))];
+//                  }
+//                  if (result2) {
+//                      _[regizter(result2) ^= intrinsic()];
+//                  }
+                  throw core::irgen::InvalidInstructionException(tr("MULSS -> All need second operand, right?"));
+              } else if (!hasOperand(2)) {
+                  /* Two operands. */
+                  _[operand(0) ^= operand(0) * operand(1)]; // check for the other data sections since only the first 32 bit should be affected (which currently is not the case!!!
+              } else {
+                  /* Three operands. */
+                  _[operand(0) ^= operand(1) * operand(2)]; // this can probably be ignored
+              }
+
+              // check for flags
+              // check what this opcode actually affects
+              _[
+                  cf ^= intrinsic(),
+                  of ^= intrinsic(),
+                  sf ^= undefined(),
+                  zf ^= undefined(),
+                  af ^= undefined(),
+                  pf ^= undefined(),
+                  less ^= ~(sf == of),
+                  less_or_equal ^= less | zf,
+                  below_or_equal ^= cf | zf
+              ];
+              break;
+            }
+            case UD_Idivss: {
+              // check for flags
+              // check what happens with signed/unsigned for floating point
+              _[operand(0) ^= unsigned_(operand(0)) / operand(1)]; // check for the other data sections since only the first 32 bit should be affected (which currently is not the case!!!
+              break;
+            }
+            case UD_Iaddss: {
+              // check for flags
+              _[operand(0) ^= operand(0) + operand(1)]; // check for the other data sections since only the first 32 bit should be affected (which currently is not the case!!!
+              break;
+            }
+            case UD_Isubss: {
+              // check for flags
+              _[operand(0) ^= operand(0) - operand(1)]; // check for the other data sections since only the first 32 bit should be affected (which currently is not the case!!!
+              break;
+            }
+            case UD_Imovaps: {
+              auto operand0 = operand(0);
+              auto operand1 = operand(1);
+
+              // all four floats should be moved!!!
+              // TODO: check size of memory or just assume 4 bytes (since that makes sense here)
+              // TODO: zero register if not register -> check for register or memory on each operand
+//              if (operand0.size() == operand1.size()) {
+                  _[std::move(operand0) ^= std::move(operand1)];
+//              } else if (operand0.size() > operand1.size()) {
+//                  /* For example, move of a small constant to a big register. */
+//                  _[std::move(operand0) ^= zero_extend(std::move(operand1))];
+//              } else {
+//                  /* Happens in assignments to segment registers. Known bug of udis86. */
+//                  _[std::move(operand0) ^= truncate(std::move(operand1))];
+//              }
+                  break;
+            }
+            case UD_Ipxor: {
+              if (operandsAreTheSame(0, 1)) {
+                  _[operand(0) ^= constant(0)];
+              } else {
+                  _[operand(0) ^= operand(0) ^ operand(1)];
+              }
+
+              // check if flags are set correct
+              _[
+                  cf ^= constant(0),
+                  pf ^= intrinsic(),
+                  zf ^= operand(0) == constant(0),
+                  sf ^= intrinsic(),
+                  of ^= constant(0),
+                  af ^= undefined(),
+                  less ^= ~(sf == of),
+                  less_or_equal ^= less | zf,
+                  below_or_equal ^= cf | zf
+              ];
+              break;
+            }
+            case UD_Icvtsi2ss: {
+              auto operand0 = operand(0);
+              auto operand1 = operand(1);
+              _[std::move(operand0) ^= std::move(operand1)]; // check this since it is supposed to convert signed int into float
+              break;
+            }
+            //case UD_Iucomiss: {
+              /*Result = UnorderedCompare(Source1[0..63], Source2[0..63]);
+              switch(Result) {
+                      case ResultUnordered:
+                              ZF = 1;
+                              PF = 1;
+                              CF = 1;
+                              break;
+                      case ResultGreaterThan:
+                              ZF = 0;
+                              PF = 0;
+                              CF = 0;
+                              break;
+                      case ResultLessThan:
+                              ZF = 0;
+                              PF = 0;
+                              CF = 1;
+                              break;
+                      case ResultEqual:
+                              ZF = 1;
+                              PF = 0;
+                              CF = 0;
+                              break;
+              }
+
+              OF = 0;
+              AF = 0;
+              SF = 0;*/
+            //}
+//            case UD_Icmpss: {
+//              auto left = dereference(si, accessSize);
+//              auto right = dereference(di, accessSize);
+//
+//              body[
+//                  cf ^= unsigned_(left) < right,
+//                  pf ^= intrinsic(),
+//                  zf ^= left == right,
+//                  sf ^= signed_(left) < right,
+//                  of ^= intrinsic(),
+//                  af ^= intrinsic(),
+//
+//                  less             ^= signed_(left) < right,
+//                  less_or_equal    ^= signed_(left) <= right,
+//                  below_or_equal   ^= unsigned_(left) <= right
+//              ];
+//              break;
+//            }
+            case UD_Iandps: {
+              if (!operandsAreTheSame(0, 1)) {
+                  _[operand(0) ^= operand(0) & operand(1)];
+              }
+
+              // check for flags and usage
+              _[
+                  cf ^= constant(0),
+                  pf ^= intrinsic(),
+                  zf ^= operand(0) == constant(0),
+                  sf ^= intrinsic(),
+                  of ^= constant(0),
+                  af ^= undefined(),
+                  less ^= ~(sf == of),
+                  less_or_equal ^= less | zf,
+                  below_or_equal ^= cf | zf
+              ];
+              break;
+            }
+            case UD_Iandnps: {
+              if (!operandsAreTheSame(0, 1)) {
+                  _[operand(0) ^= operand(0) | operand(1)]; // check if is correct, since and not is or, right?
+              }
+
+              // check for flags and usage
+              _[
+                  cf ^= constant(0),
+                  pf ^= intrinsic(),
+                  zf ^= operand(0) == constant(0),
+                  sf ^= intrinsic(),
+                  of ^= constant(0),
+                  af ^= undefined(),
+                  less ^= ~(sf == of),
+                  less_or_equal ^= less | zf,
+                  below_or_equal ^= cf | zf
+              ];
+              break;
+            }
+            case UD_Iorps: {
+                if (!operandsAreTheSame(0, 1)) {
+                    _[operand(0) ^= operand(0) | operand(1)]; // check if is correct
+                }
+
+                // check for flags
+                _[
+                    cf ^= constant(0),
+                    pf ^= intrinsic(),
+                    zf ^= operand(0) == constant(0),
+                    sf ^= intrinsic(),
+                    of ^= constant(0),
+                    af ^= undefined(),
+                    less ^= ~(sf == of),
+                    less_or_equal ^= less | zf,
+                    below_or_equal ^= cf | zf
+                ];
+                break;
+            }
             default: {
+                ofstream myfile;
+                myfile.open ("_UNSUPPORTED_OPCODES.txt", std::ios_base::app);
+                switch (ud_obj_.mnemonic) {
+//                  case UD_Imulss: {
+//                      myfile << "MULSS\n";
+//                      break;
+//                  }
+                  default: {
+                      myfile << "UD " << ud_obj_.mnemonic << "\n";
+                  }
+                }
+                myfile.close();
+
                 /* Unsupported instruction. */
                 _(std::make_unique<core::ir::InlineAssembly>());
                 return;

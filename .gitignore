@@ -24,3 +24,6 @@ gmon.out
 
 # Python's byte code files.
 *.pyc
+
+# QtCreator user settings
+*.user
