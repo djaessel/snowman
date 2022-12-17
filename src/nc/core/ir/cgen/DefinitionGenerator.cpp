@@ -769,15 +769,17 @@ std::unique_ptr<likec::Statement> DefinitionGenerator::makeJump(const Jump *jump
             }
             return std::make_unique<likec::Return>();
         }
-        return std::make_unique<likec::Goto>(makeExpression(target.address()));
+
         std::ofstream myfile;
         myfile.open ("SOLOGLOGOS.txt", std::ios_base::app);
         myfile << "OOO:" << target.address()->toString().toStdString().c_str() << "\n";
         myfile.close();
+
+        return std::make_unique<likec::Goto>(makeExpression(target.address()));
     } else {
         std::ofstream myfile;
         myfile.open ("SOLOGLOGOS.txt", std::ios_base::app);
-        myfile << "XXX:" << target.toString().toStdString().c_str() << "\n";
+        myfile << "XXX:" << "\n";
         myfile.close();
         return std::make_unique<likec::Goto>(std::make_unique<likec::String>(QLatin1String("???")));
     }
