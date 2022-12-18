@@ -276,11 +276,13 @@ void TreePrinter::printSignature(const FunctionDeclaration *node) {
 }
 
 void TreePrinter::doPrint(const MemberDeclaration *node) {
-    //if (node->identifier().contains("xmm")) {
-    //  out_ << "float*" << ' ' << node->identifier() << ';' << " // or double* ?"; // check later if is correct
-    //} else {
+    QString s = node->type()->toString();
+    if (s.contains("[") && s.contains("]")) {
+      QStringList x = s.split("[");
+      out_ << x[0].toStdString().c_str() << ' ' << node->identifier() << "[" << x[1].split("]")[0] + "];";
+    } else {
       out_ << *node->type() << ' ' << node->identifier() << ';';
-    //}
+    }
 }
 
 void TreePrinter::doPrint(const StructTypeDeclaration *node) {
@@ -736,6 +738,10 @@ void TreePrinter::doPrint(const Goto *node) {
     out_ << "goto ";
     print(node->destination());
     out_ << ';';
+    QString xyz = node->destination()->as<String>()->toString();
+    if (xyz.startsWith("0x")) {
+        out_ << " // FIXME: ignored goto address!!!";
+    }
 }
 
 void TreePrinter::doPrint(const If *node) {
