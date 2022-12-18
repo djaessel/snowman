@@ -739,7 +739,7 @@ void TreePrinter::doPrint(const Goto *node) {
     out_ << "goto ";
     print(node->destination());
     out_ << ';';
-    out_ << " /* NODE_KIND " << node->destination()->nodeKind() << " */";
+    out_ << " /* EXPRESSION_KIND " << node->destination()->expressionKind() << " */";
 }
 
 void TreePrinter::doPrint(const If *node) {
