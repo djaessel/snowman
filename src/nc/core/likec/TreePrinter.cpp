@@ -461,6 +461,7 @@ void TreePrinter::doPrint(const CallOperator *node) {
     print(node->callee());
     out_ << '(';
     bool comma = false;
+    // TODO: check for duplicate or unused arguments
     foreach (const auto &argument, node->arguments()) {
         if (comma) {
             out_ << ", ";
@@ -738,10 +739,7 @@ void TreePrinter::doPrint(const Goto *node) {
     out_ << "goto ";
     print(node->destination());
     out_ << ';';
-    QString xyz = node->destination()->as<String>()->toString();
-    if (xyz.startsWith("0x")) {
-        out_ << " // FIXME: ignored goto address!!!";
-    }
+    out_ << " /* NODE_KIND " << node->destination()->nodeKind() << " */";
 }
 
 void TreePrinter::doPrint(const If *node) {
