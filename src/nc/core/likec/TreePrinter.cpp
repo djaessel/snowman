@@ -739,7 +739,11 @@ void TreePrinter::doPrint(const Goto *node) {
     out_ << "goto ";
     print(node->destination());
     out_ << ';';
-    out_ << " /* EXPRESSION_KIND " << node->destination()->expressionKind() << " */";
+    if (node->destination()->is<IntegerConstant>()) {
+      out_ << " /* NOT_FOUND_GOTO_DESTITATION */";
+    } else if (node->destination()->is<String>()) {
+      out_ << " /* NOT_FOUND_GOTO_DESTITATION_FULL */";
+    }
 }
 
 void TreePrinter::doPrint(const If *node) {
