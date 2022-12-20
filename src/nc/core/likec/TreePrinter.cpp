@@ -461,16 +461,36 @@ void TreePrinter::doPrint(const CallOperator *node) {
     print(node->callee());
     out_ << '(';
     bool comma = false;
+
+    int loopStart = 255;
+    bool possible = false;
+    std::vector<Expression*> vv;
+    foreach (const auto &argument, node->arguments()) {
+        if (vv[0] == argument && node->arguments().back() == vv.back()){
+            if (vv.size() * 2 == node->arguments().size()){
+                loopStart = vv.size();
+                possible = true;
+                break;
+            }
+        }
+        vv.push_back(argument);
+    }
     // TODO: check for duplicate or unused arguments
     foreach (const auto &argument, node->arguments()) {
-        if (comma) {
+        if (loopStart > 0) {
+          if (comma) {
             out_ << ", ";
-        } else {
+          } else {
             comma = true;
+          }
+          print(argument);
         }
-        print(argument);
+        loopStart--;
     }
     out_ << ')';
+
+    if (possible)
+      out_ << " /* BOTANIX */ ";
 }
 
 void TreePrinter::doPrint(const FunctionIdentifier *node) {
