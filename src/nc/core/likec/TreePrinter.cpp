@@ -462,22 +462,49 @@ void TreePrinter::doPrint(const CallOperator *node) {
     out_ << '(';
     bool comma = false;
 
-    int loopStart = 255;
     bool possible = false;
-    std::vector<Expression*> vv;
-    foreach (const auto &argument, node->arguments()) {
-        if (vv[0] == argument && node->arguments().back() == vv.back()){
-            if (vv.size() * 2 == node->arguments().size()){
-                loopStart = vv.size();
-                possible = true;
-                break;
-            }
+    int loopStart = node->arguments().size() / 2;
+
+    if (node->arguments().size() > 0){
+      bool okk = false;
+      if (node->arguments()[loopStart]->is<VariableIdentifier>() && node->arguments()[0]->is<VariableIdentifier>()){
+        possible = (node->arguments()[loopStart]->as<VariableIdentifier>()->declaration()->identifier().compare(node->arguments()[0]->as<VariableIdentifier>()->declaration()->identifier()) == 0);
+        okk = true;
+      } else if (node->arguments()[loopStart]->is<IntegerConstant>() && node->arguments()[0]->is<IntegerConstant>()){
+        possible = (node->arguments()[loopStart]->as<IntegerConstant>()->value().value() == node->arguments()[0]->as<IntegerConstant>()->value().value());
+        okk = true;
+      } else if (node->arguments()[loopStart]->is<UnaryOperator>() && node->arguments()[0]->is<UnaryOperator>()){// check actually
+        possible = (node->arguments()[loopStart]->as<UnaryOperator>()->operand()->expressionKind() == node->arguments()[0]->as<UnaryOperator>()->operand()->expressionKind());
+        okk = true;
+      } else if (node->arguments()[loopStart]->is<BinaryOperator>() && node->arguments()[0]->is<BinaryOperator>()){// check actually
+        possible = (node->arguments()[loopStart]->as<BinaryOperator>()->operatorKind() == node->arguments()[0]->as<BinaryOperator>()->operatorKind());
+        okk = true;
+      }
+
+      if (possible && loopStart > 0) {
+        if (node->arguments()[loopStart - 1]->is<VariableIdentifier>() && node->arguments().back()->is<VariableIdentifier>()){
+          possible = (node->arguments()[loopStart - 1]->as<VariableIdentifier>()->declaration()->identifier().compare(node->arguments().back()->as<VariableIdentifier>()->declaration()->identifier()) == 0);
+        } else if (node->arguments()[loopStart - 1]->is<IntegerConstant>() && node->arguments().back()->is<IntegerConstant>()){
+          possible = (node->arguments()[loopStart - 1]->as<IntegerConstant>()->value().value() == node->arguments().back()->as<IntegerConstant>()->value().value());
+        } else if (node->arguments()[loopStart - 1]->is<UnaryOperator>() && node->arguments().back()->is<UnaryOperator>()){// check actually
+          possible = (node->arguments()[loopStart - 1]->as<UnaryOperator>()->operand()->expressionKind() == node->arguments().back()->as<UnaryOperator>()->operand()->expressionKind());
+        } else if (node->arguments()[loopStart - 1]->is<BinaryOperator>() && node->arguments().back()->is<BinaryOperator>()){// check actually
+          possible = (node->arguments()[loopStart - 1]->as<BinaryOperator>()->operatorKind() == node->arguments().back()->as<BinaryOperator>()->operatorKind());
         }
-        vv.push_back(argument);
+      }
+
+      if (!okk) {
+        out_ << " /* KIND: " << node->arguments().back()->expressionKind() << " */ ";
+      }
     }
-    // TODO: check for duplicate or unused arguments
+
+    if (!possible) {
+      loopStart = node->arguments().size();
+    }
+
+    int curIdx = 0;
     foreach (const auto &argument, node->arguments()) {
-        if (loopStart > 0) {
+        if (curIdx < loopStart) {
           if (comma) {
             out_ << ", ";
           } else {
@@ -485,7 +512,7 @@ void TreePrinter::doPrint(const CallOperator *node) {
           }
           print(argument);
         }
-        loopStart--;
+        curIdx++;
     }
     out_ << ')';
 
