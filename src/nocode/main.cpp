@@ -171,6 +171,164 @@ void help() {
     qout << "License: " << branding.licenseName() << " <" << branding.licenseUrl() << ">" << '\n';
 }
 
+
+/* CLASSNER CODE START */
+#include <QCoreApplication>
+#include <QElapsedTimer>
+#include <QString>
+
+#include "classner_module/classner.h"
+#include "classner_module/rawclass.h"
+#include "classner_module/structer.h"
+#include "classner_module/classstorer.h"
+#include "classner_module/classreader.h"
+#include "classner_module/reinterpretalter.h"
+#include "classner_module/functionanalyzer.h"
+
+static bool skipClassWrite = false;
+static bool skipReinterpret = false;
+static bool skipAnalyze = false;
+static bool skipRemoveIncluded = false;
+static bool skipClassAnalyze = false;
+
+
+static bool argumentExists(QString arg, const char* search)
+{
+  return arg == QString(search);
+}
+
+static void printElapsedTime(QElapsedTimer *elapsedTimer)
+{
+  ulong msecs = elapsedTimer->elapsed();
+  ulong secs = msecs / 1000;
+  if ((msecs % 1000) > 0) secs++;
+  ulong hours = secs / 3600;
+  secs = secs % 3600;
+  ulong mins = secs / 60;
+  secs = secs % 60;
+  qout << "Time taken: " << hours << ":" << mins << ":" << secs << Qt::endl;
+}
+
+static void printSkipOptions()
+{
+  // print options
+  qout << "SkipClassWrite: " << ((skipClassWrite) ? "True" : "False") << Qt::endl;
+  qout << "SkipReinterpret: " << ((skipReinterpret) ? "True" : "False") << Qt::endl;
+  qout << "SkipAnalyze: " << ((skipAnalyze) ? "True" : "False") << Qt::endl;
+  qout << "SkipRemoveIncluded: " << ((skipRemoveIncluded) ? "True" : "False") << Qt::endl;
+  qout << "SkipClassAnalyze: " << ((skipClassAnalyze) ? "True" : "False") << Qt::endl;
+}
+
+
+int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
+  int argc = argv.size();
+  if (argc > 0) {
+      for (int i = 0; i < argc; i++) {
+          if (argumentExists(argv[i], "-sc"))
+              skipClassWrite = true;
+          else if (argumentExists(argv[i], "-sr"))
+              skipReinterpret = true;
+          else if (argumentExists(argv[i], "-sa"))
+              skipAnalyze = true;
+          else if (argumentExists(argv[i], "-si"))
+              skipRemoveIncluded = true;
+          else if (argumentExists(argv[i], "-sa2"))
+              skipClassAnalyze = true;
+          else if (argumentExists(argv[i], "--skip-all")){
+              skipClassWrite = true;
+              skipReinterpret = true;
+              skipAnalyze = true;
+              skipRemoveIncluded = true;
+              skipClassAnalyze = true;
+          }
+      }
+  }
+
+  printSkipOptions();
+
+
+  if (filePath.isEmpty()) {
+      cout << "No file given!" << endl;
+      return 1;
+  }
+
+
+  // Start program time watch
+  QElapsedTimer elapsedTimer;
+  elapsedTimer.start();
+
+
+  cout << "Processing cpp file ..." << endl;
+
+  ClassStorer::initValues();
+
+  Structer structer;
+  structer.readStructs(filePath);
+
+  Classner classner;
+  classner.readClassFunctions(filePath, skipClassWrite);
+  vector<RawClass> classes = classner.getClasses();
+
+  ClassStorer classStorer(structer, classes);
+
+  if (!skipClassWrite) {
+    classStorer.writeClasses();
+    classStorer.updateNewCppFile(filePath/*, classes*/);
+  }
+
+  if (!skipReinterpret) {
+    ReinterpretAlter reinterpret;
+    reinterpret.removeReinterpret(classes);
+  }
+
+  ClassReader classReader;
+  classReader.readClasses();
+  map<QString, FixedClass> modifiedClasses = classReader.getClasses();
+
+  // remove default cpp file from class check - change later with different behavior
+  QStringList pathArray = filePath.split("/");
+  QString fileName = pathArray.back().split(".")[0];
+  modifiedClasses.erase(fileName);
+
+  //map<QString, FixedClass> bakModClasses;
+  //foreach (auto c, modifiedClasses) {
+  //    bakModClasses.insert_or_assign(c.first, c.second);
+  //}
+
+  if (!skipAnalyze) {
+      FunctionAnalyzer funcAnalyzer;
+      map<QString, FixedClass> fixedClasses = funcAnalyzer.findOriginalClass(&modifiedClasses);
+      map<QString, QStringList> classIncludes = funcAnalyzer.addUsedClassImports(&fixedClasses, &classes); // FIXME: bottleneck!!!
+      // fixed_classes = analyzer.removeInvalidParams(fixed_classes, classes) # FIXME: broken at the moment
+      classStorer.writeClassesJust(fixedClasses, classIncludes);
+  }
+
+  if (!skipRemoveIncluded) {
+      cout << "Remove included [not implemented yet]" << endl;
+      // TODO: Python equivalen: os.system("cd generated_classes && python3 remove_included.py")
+  }
+
+  if (!skipClassAnalyze) {
+      cout << "Class Analyze [not implemented yet]" << endl;
+      // TODO: Python equivalent
+      // classAnalyzer = ClassAnalyzer()
+      // classAnalyzer.findClassAttributes(bak_mod_classes) # FIXME: only works when previous are done and skipped second run
+      // - - -
+      //gotogo = Gotogo()
+      //gotogo.processClasses(modified_classes)
+      //os.system("mv *_*.cpp endl/class_info/") # FIXME: change later
+  }
+
+
+  // Stop program time watch
+  printElapsedTime(&elapsedTimer);
+  elapsedTimer.invalidate();
+
+  return 0;
+}
+/* CLASSNER CODE END */
+
+
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
 
@@ -288,6 +446,10 @@ int main(int argc, char *argv[]) {
                 openFileForWritingAndCall(cxxFile,     [&](QTextStream &out) { context.tree()->print(out); });
             }
         }
+
+        // classner code
+        int result = optimizeDecompiledCodeStructure(args, cxxFile);
+        if (result != 0) return result; // return error code from classner instead
     } catch (const nc::Exception &e) {
         qerr << self << ": " << e.unicodeWhat() << '\n';
         return 1;
