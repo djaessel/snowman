@@ -334,9 +334,6 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
 
-    qout << "TEST" << Qt::endl;
-    cout << "TEST2" << endl;
-
     try {
         QString sectionsFile;
         QString symbolsFile;
