@@ -295,7 +295,8 @@ QString ClassStorer::replaceSymbolsInLine(QString line)
                         clam++;
                       else if (!charActive && solom[i] == ')')
                         clam--;
-                      else if (solom[i] == '"' && i > 0 && solom[i - 1] != '\\') // only actual string start and end characters should count
+                      else if (solom[i] == '"' && i > 0 &&
+                               (solom[i - 1] != '\\' || (solom[i - 1] == '\\' && i > 1 && solom[i - 2] == '\\'))) // only actual string start and end characters should count
                         charActive = !charActive;
 
                       if (clam <= 0) {
