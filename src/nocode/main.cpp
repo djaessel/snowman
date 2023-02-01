@@ -253,14 +253,12 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
       return 1;
   }
 
-  qout << "Processing " << filePath.toStdString().c_str() << "..." << Qt::endl;
-
   // Start program time watch
   QElapsedTimer elapsedTimer;
   elapsedTimer.start();
 
 
-  qout << "Processing cpp file ..." << Qt::endl;
+  qout << "Processing " << filePath.toStdString().c_str() << "..." << Qt::endl;
 
   ClassStorer::initValues();
 
