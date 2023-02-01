@@ -37,11 +37,11 @@ void ClassStorer::initValues()
 
   ClassStorer::Replaces = map<QString, QString>();
   // replace LLVM 1-Bit values with boolean
-  ClassStorer::Replaces.insert_or_assign(QString("uint1_t"), QString("bool"));
-  ClassStorer::Replaces.insert_or_assign(QString("int1_t"), QString("bool"));
+  ClassStorer::Replaces.insert_or_assign(QString(" uint1_t"), QString(" bool"));
+  ClassStorer::Replaces.insert_or_assign(QString(" int1_t"), QString(" bool"));
   // ---
-  ClassStorer::Replaces.insert_or_assign(QString("unsigned char"), QString("BYTE"));
-  ClassStorer::Replaces.insert_or_assign(QString("signed char"), QString("S_BYTE"));
+  ClassStorer::Replaces.insert_or_assign(QString(" unsigned char"), QString(" BYTE"));
+  ClassStorer::Replaces.insert_or_assign(QString(" signed char"), QString(" S_BYTE"));
   // return_address() from Decompiler GCC replacement(?)
   ClassStorer::Replaces.insert_or_assign(QString("__return_address()"), QString("__builtin_extract_return_addr(__builtin_return_address(0))"));
   // __zero_stack_offset() from Decompiler GCC replacement(?)
