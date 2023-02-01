@@ -18,7 +18,7 @@ Feel free to link:doc/todo.asciidoc[pick a problem], solve it, and send a link:h
 Write to our link:http://lists.derevenets.com/mailman/listinfo/snowman[mailing list] if you have questions.
 
 Classner extension
----------------
+------------------
 With this now extension the decompiler automatically tries to create C++ classes based on the originally decompiled code.
 When there is enough information given, it might be able to recreate the original class structure as close as possible
 But this extension is still in its early stages, so be kind and also let me know about bugs and suggestions, if you want to. :)
