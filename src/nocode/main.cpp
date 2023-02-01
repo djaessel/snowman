@@ -56,6 +56,26 @@
 
 #include <nc/core/image/Section.h>
 
+/* CLASSNER CODE START */
+#include <QCoreApplication>
+#include <QElapsedTimer>
+#include <QString>
+
+#include "classner_module/classner.h"
+#include "classner_module/rawclass.h"
+#include "classner_module/structer.h"
+#include "classner_module/classstorer.h"
+#include "classner_module/classreader.h"
+#include "classner_module/reinterpretalter.h"
+#include "classner_module/functionanalyzer.h"
+
+static bool skipClassWrite = false;
+static bool skipReinterpret = false;
+static bool skipAnalyze = false;
+static bool skipRemoveIncluded = false;
+static bool skipClassAnalyze = false;
+/* CLASSNER CODE END */
+
 const char *self = "nocode";
 
 QTextStream qin(stdin, QIODevice::ReadOnly);
@@ -173,25 +193,6 @@ void help() {
 
 
 /* CLASSNER CODE START */
-#include <QCoreApplication>
-#include <QElapsedTimer>
-#include <QString>
-
-#include "classner_module/classner.h"
-#include "classner_module/rawclass.h"
-#include "classner_module/structer.h"
-#include "classner_module/classstorer.h"
-#include "classner_module/classreader.h"
-#include "classner_module/reinterpretalter.h"
-#include "classner_module/functionanalyzer.h"
-
-static bool skipClassWrite = false;
-static bool skipReinterpret = false;
-static bool skipAnalyze = false;
-static bool skipRemoveIncluded = false;
-static bool skipClassAnalyze = false;
-
-
 static bool argumentExists(QString arg, const char* search)
 {
   return arg == QString(search);
@@ -248,17 +249,18 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
 
 
   if (filePath.isEmpty()) {
-      cout << "No file given!" << endl;
+      qout << "No file given!" << Qt::endl;
       return 1;
   }
 
+  qout << "Processing " << filePath.toStdString().c_str() << "..." << Qt::endl;
 
   // Start program time watch
   QElapsedTimer elapsedTimer;
   elapsedTimer.start();
 
 
-  cout << "Processing cpp file ..." << endl;
+  qout << "Processing cpp file ..." << Qt::endl;
 
   ClassStorer::initValues();
 
@@ -304,19 +306,19 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   }
 
   if (!skipRemoveIncluded) {
-      cout << "Remove included [not implemented yet]" << endl;
+      qout << "Remove included [not implemented yet]" << Qt::endl;
       // TODO: Python equivalen: os.system("cd generated_classes && python3 remove_included.py")
   }
 
   if (!skipClassAnalyze) {
-      cout << "Class Analyze [not implemented yet]" << endl;
+      qout << "Class Analyze [not implemented yet]" << Qt::endl;
       // TODO: Python equivalent
       // classAnalyzer = ClassAnalyzer()
       // classAnalyzer.findClassAttributes(bak_mod_classes) # FIXME: only works when previous are done and skipped second run
       // - - -
       //gotogo = Gotogo()
       //gotogo.processClasses(modified_classes)
-      //os.system("mv *_*.cpp endl/class_info/") # FIXME: change later
+      //os.system("mv *_*.cpp Qt::endl/class_info/") # FIXME: change later
   }
 
 
@@ -331,6 +333,9 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
+
+    qout << "TEST" << Qt::endl;
+    cout << "TEST2" << endl;
 
     try {
         QString sectionsFile;
