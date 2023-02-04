@@ -18,11 +18,34 @@ Feel free to link:doc/todo.asciidoc[pick a problem], solve it, and send a link:h
 Write to our link:http://lists.derevenets.com/mailman/listinfo/snowman[mailing list] if you have questions.
 
 Classner extension
-------------------
+==================
 With this now extension the decompiler automatically tries to create C++ classes based on the originally decompiled code.
 When there is enough information given, it might be able to recreate the original class structure as close as possible
 But this extension is still in its early stages, so be kind and also let me know about bugs and suggestions, if you want to. :)
 
+Processing time
+---------------
 Keep in mind that this extension can take an additionally long time to process and generate everything.
 For a personal project with over 1000 classes it takes around 1 hour, as an example.
 But this can vary for project to project and the size and code of the classes etc.
+
+Thoughts and future
+-------------------
+Depending on the code outcome, it might be possible that in later stages some hard coded or wired functions (standard C/C++ libraries and headers)
+will be also included and properly called. I also planned to make it so the original class attributes/properties and functions that might be related will be added in properly and found by the Classner analyzers.
+It already is in the going, but still in an early stage.
+
+Also the functions and methods are not fully as they should be. Some still have default return values and parameters that were added falsely by snowman or my generators as well. I will also add a few project and build files and such for the generated code, so it can directly be opened up and handled by typical code editors / IDEs. (e.g. Qt Creator, CMake, Atom, Visual Studio, git, etc.).
+
+In the end you should have a somewhat decent source code that can compile and run somewhat proper to the original machine code.
+Although for that I mostly have to rely on the existing snowman decompiling and analyzing functions and powers, since I just build an extension on top of it mainly.
+
+Depending on my mood and time and will and what else might happen, it could also be that this project, like so many, will fade into the sand earlier than expected, well or melt, staying with the original name. ^^
+
+Standalone
+----------
+This project also has a standalone version, in case you have your own version of snowman or maybe another decompiler that generates the same or very similar output to the snowman decompiled code.
+
+Snowman-Clang-Classner: https://github.com/djaessel/snowman-clang-classner
+
+(It both has a python and a C++ version - on which this extension is based on.)
