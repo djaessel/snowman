@@ -220,6 +220,116 @@ static void printSkipOptions()
   qout << "SkipClassAnalyze: " << ((skipClassAnalyze) ? "True" : "False") << Qt::endl;
 }
 
+static void DownDir(QDir dir, QStringList* listX)
+{
+  const QFileInfoList list = dir.entryInfoList();
+  QFileInfo fi;
+  for (int l = 0; l < list.size(); l++)
+  {
+      fi = list.at(l);
+      if (fi.isDir() && fi.fileName() != "." && fi.fileName() != "..")
+      {
+          DownDir(fi.absoluteFilePath(), listX);
+      }
+      else if (fi.isFile() && fi.path().endsWith(".h"))
+      {
+          listX->append(fi.absoluteFilePath());
+      }
+  }
+}
+
+static void removeIncluded(QString moduleDir, QString moduleName, QString operatingDir = "./generated_classes")
+{
+  bool standardDir = true;
+  QString originalDir = QDir::currentPath();
+  if (operatingDir != ".") {
+      standardDir = false;
+      operatingDir = operatingDir.replace('/', QDir::separator());
+      QDir::setCurrent(operatingDir);
+  }
+
+  moduleDir = moduleDir.replace("/", QDir::separator());
+
+  QStringList files;
+  QDir glob(moduleDir);
+  DownDir(glob, &files);
+
+  QStringList excludedDirs;
+  excludedDirs.append(".git");
+
+  QStringList fileNames;
+  foreach (QString filePath, files) {
+      bool foundExl = false;
+      foreach (QString dirPath, excludedDirs) {
+          if (filePath.contains(dirPath + QDir::separator()) || filePath.endsWith(dirPath) || filePath.startsWith(dirPath)) {
+              foundExl = true;
+              break;
+          }
+      }
+
+      if (!foundExl) {
+          fileNames.append(filePath.split(QDir::separator()).last());
+      }
+  }
+
+  QString sourceFile;
+  QStringList fileNamesFound;
+  foreach (QString headerFile, fileNames) {
+      if (QFile::exists(headerFile) && QFileInfo(headerFile).isFile()) {
+          if (QFile::remove(headerFile)) {
+              fileNamesFound.append(headerFile);
+          }
+      }
+
+      sourceFile = headerFile.replace(".h", ".cpp");
+      if (QFile::exists(sourceFile) && QFileInfo(sourceFile).isFile()) {
+          QFile::remove(sourceFile);
+      }
+  }
+
+  map<QString, QString> cortess;
+  QString fileName, filex2;
+  foreach (QString filex, files) {
+      fileName = filex.split(QDir::separator()).last();
+      if (fileNamesFound.contains(fileName)) {
+          filex2 = filex.mid(filex.indexOf(moduleName)).replace(moduleName, moduleDir);
+          cortess.insert_or_assign(fileName, filex2);
+      }
+  }
+
+  QStringList allMyFiles = QDir(".").entryList(QDir::Files | QDir::NoDotAndDotDot);
+  foreach (QString file, allMyFiles) {
+      if (file.endsWith(".h")) {
+          QFile f(file);
+          if (!f.open(QFile::ReadOnly | QFile::Text))
+          {
+              cout << "ERROR1 file read removeIncludes: " << file.toStdString().c_str() << endl;
+              continue;
+          }
+          QTextStream in(&f);
+          QString alla = in.readAll();
+          foreach (auto incl, cortess) {
+              alla = alla.replace("\"" + incl.first + "\"", "\"" + incl.second + "\"");
+          }
+          f.close();
+          QFile f2(file);
+          if (!f2.open(QFile::WriteOnly | QFile::Text))
+          {
+              cout << "ERROR2 file read removeIncludes: " << file.toStdString().c_str() << endl;
+              continue;
+          }
+          QTextStream out(&f2);
+          out << alla;
+          f2.close();
+      }
+  }
+
+  // finish up and reset to original working dir
+  if (!standardDir) {
+    QDir::setCurrent(originalDir);
+  }
+}
+
 
 int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   int argc = argv.size();
@@ -304,8 +414,8 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   }
 
   if (!skipRemoveIncluded) {
-      qout << "Remove included [not implemented yet]" << Qt::endl;
-      // TODO: Python equivalen: os.system("cd generated_classes && python3 remove_included.py")
+      qout << "Remove included..." << Qt::endl;
+      //removeIncluded("../havok-2013", "havok-2013"); // example with Havok-2013
   }
 
   if (!skipClassAnalyze) {
