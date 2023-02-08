@@ -175,7 +175,10 @@ void help() {
          << "When a file name is '-' or omitted, stdout is used." << '\n'
          << '\n';
 
+    const char* classnerVersion = "v0.0.4"; // hardcoded for now, later automatically generate or something
     qout << "Version: " << branding.applicationVersion() << '\n';
+    qout << "Extensions:" << '\n';
+    qout << " - Classner Version: " << classnerVersion << '\n';
 
     qout << "Available architectures:";
     foreach (auto architecture, nc::core::arch::ArchitectureRepository::instance()->architectures()) {
