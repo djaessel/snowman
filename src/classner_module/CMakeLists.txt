@@ -22,6 +22,10 @@ set(SOURCES
     specialvals.h
     structer.cpp
     structer.h
+    classanalyzer.cpp
+    classanalyzer.h
+    gotogo.cpp
+    gotogo.h
 )
 
 

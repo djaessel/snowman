@@ -68,6 +68,8 @@
 #include "classner_module/classreader.h"
 #include "classner_module/reinterpretalter.h"
 #include "classner_module/functionanalyzer.h"
+#include "classner_module/classanalyzer.h"
+#include "classner_module/gotogo.h"
 
 static bool skipClassWrite = false;
 static bool skipReinterpret = false;
@@ -175,7 +177,7 @@ void help() {
          << "When a file name is '-' or omitted, stdout is used." << '\n'
          << '\n';
 
-    const char* classnerVersion = "v0.0.4"; // hardcoded for now, later automatically generate or something
+    const char* classnerVersion = "v0.0.5"; // hardcoded for now, later automatically generate or something
     qout << "Version: " << branding.applicationVersion() << '\n';
     qout << "Extensions:" << '\n';
     qout << " - Classner Version: " << classnerVersion << '\n';
@@ -403,10 +405,10 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   QString fileName = pathArray.back().split(".")[0];
   modifiedClasses.erase(fileName);
 
-  //map<QString, FixedClass> bakModClasses;
-  //foreach (auto c, modifiedClasses) {
-  //    bakModClasses.insert_or_assign(c.first, c.second);
-  //}
+  map<QString, FixedClass> bakModClasses;
+  foreach (auto c, modifiedClasses) {
+      bakModClasses.insert_or_assign(c.first, c.second);
+  }
 
   if (!skipAnalyze) {
       FunctionAnalyzer funcAnalyzer;
@@ -422,14 +424,22 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   }
 
   if (!skipClassAnalyze) {
-      qout << "Class Analyze [not implemented yet]" << Qt::endl;
-      // TODO: Python equivalent
-      // classAnalyzer = ClassAnalyzer()
-      // classAnalyzer.findClassAttributes(bak_mod_classes) # FIXME: only works when previous are done and skipped second run
+      qout << "Class Analyzing..." << Qt::endl;
+      ClassAnalyzer classAnalyzer;
+      classAnalyzer.findClassAttributes(&bakModClasses); // FIXME: only works when previous are done and skipped second run
+      // TODO: later retrieve actual attributes maybe and then store in actual class files etc.
       // - - -
-      //gotogo = Gotogo()
-      //gotogo.processClasses(modified_classes)
-      //os.system("mv *_*.cpp Qt::endl/class_info/") # FIXME: change later
+      GoToGo gotogo;
+      gotogo.processClasses(&modifiedClasses);
+
+      QStringList files = QDir(".").entryList(QDir::Files | QDir::NoDotAndDotDot);
+      foreach (QString file, files) {
+          if (file.contains("_") && file.endsWith(".cpp")) {
+              QFile fx(file);
+              fx.copy(QString("./endl/class_info/" + file).replace("/", QDir::separator()));
+              fx.remove();
+          }
+      }
   }
 
 
