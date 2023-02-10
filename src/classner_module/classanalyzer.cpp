@@ -2,12 +2,10 @@
 
 ClassAnalyzer::ClassAnalyzer()
 {
-  QString endlDir = QString("./endl").replace("/", QDir::separator());
-  QString endlClassInfoDir = QString("./endl/class_info").replace("/", QDir::separator());
-  if (!QDir(endlDir).exists())
-    QDir().mkdir(endlDir);
-  if (!QDir(endlClassInfoDir).exists())
-    QDir().mkdir(endlClassInfoDir);
+  QString exDir(QString("./endl/class_info").replace("/", QDir::separator()));
+  if (!QDir().mkpath(exDir)) {
+      cout << "Could not create " << exDir.toStdString().c_str() << "!" << endl;
+  }
 }
 
 QString ClassAnalyzer::clamsFix(QString allText, QString text)
@@ -150,26 +148,28 @@ QStringList ClassAnalyzer::findClassAttributesExternal(QString cls, map<QString,
 
               if (tmo.contains(cls)) {
                   QRegExp moa("( "+cls+"[*]* [a-z0-9_]+ = )");
-                  moa.indexIn(tmo);
+                  int moaPos = moa.indexIn(tmo);
 
                   QRegExp mob("( "+cls+"[*]* [a-z0-9_]+[;])");
-                  mob.indexIn(tmo);
+                  int mobPos = mob.indexIn(tmo);
 
                   QRegExp mo2("([a-z0-9_]+[-][>][a-zA-Z_<>0-9*]+\()");
-                  mo2.indexIn(tmo);
+                  int mo2Pos = mo2.indexIn(tmo);
 
                   QString tx;
                   QString nomo("");
-                  if (moa.captureCount() > 0 || mob.captureCount() > 0) {
-                      if (moa.captureCount() > 0) {
-                          tx = moa.cap().trimmed().remove(QRegExp("([=]+$)")).remove(QRegExp("([ ]+$)"));
+                  if (moaPos >= 0 || mobPos >= 0) {
+                      if (moaPos >= 0) {
+                          QStringList mx = moa.capturedTexts();
+                          tx = mx.first().trimmed().remove(QRegExp("([=]+$)")).remove(QRegExp("([ ]+$)"));
                       } else {
-                          tx = mob.cap().trimmed().remove(QRegExp("([;]+$)"));
+                          QStringList mx = mob.capturedTexts();
+                          tx = mx.first().trimmed().remove(QRegExp("([;]+$)"));
                       }
                       tx = tx.split(' ')[1];
                       activeAttribs.append(tx);
                       nomo = "\"" + tx + "\";\"" + tmo.trimmed().remove(QRegExp("([;]+$)"));
-                  } else if (mo2.captureCount() > 0) {
+                  } else if (mo2Pos >= 0) {
                       tx = mo2.cap().trimmed();
                       QString txa = tx.mid(tx.indexOf('>') + 1);
                       txa = txa.left(txa.indexOf('(')- 1); // FIXME: possible inde bug because txa was tx before in python
@@ -215,7 +215,6 @@ QStringList ClassAnalyzer::findClassAttributesExternal(QString cls, map<QString,
   foreach (auto attr, classAttributes) {
       ret.append(attr.second);
   }
-  classAttributes.clear();
 
   return ret;
 }
@@ -252,6 +251,7 @@ map<QString, QStringList> ClassAnalyzer::findClassAttributes(map<QString, FixedC
   cout << "Add used class imports..." << endl;
 
   uint processor_count = processorCount();
+  //processor_count = 1; // for testing bugs
   int length = classes->size() / processor_count;
   for (uint i = 0; i < processor_count; i++) {
       int start = i * length;

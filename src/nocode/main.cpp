@@ -424,12 +424,12 @@ int optimizeDecompiledCodeStructure(QStringList argv, QString filePath) {
   }
 
   if (!skipClassAnalyze) {
+      qout << "Class Analyzing..." << Qt::endl;
+      ClassAnalyzer classAnalyzer;
+      classAnalyzer.findClassAttributes(&bakModClasses); // FIXME: only works when previous are done and skipped second run in python(?)
+      // TODO: later retrieve actual attributes maybe and then store in actual class files etc.
+      // - - -
 // DEACTIVATE SEGMANT FAULT!
-//      qout << "Class Analyzing..." << Qt::endl;
-//      ClassAnalyzer classAnalyzer;
-//      classAnalyzer.findClassAttributes(&bakModClasses); // FIXME: only works when previous are done and skipped second run
-//      // TODO: later retrieve actual attributes maybe and then store in actual class files etc.
-//      // - - -
 //      GoToGo gotogo;
 //      gotogo.processClasses(&modifiedClasses);
 //
