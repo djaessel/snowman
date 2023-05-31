@@ -8,6 +8,9 @@ ClassAnalyzer::ClassAnalyzer()
   }
 }
 
+// TODO: add support for C/C++ stdlib.h and other standard functions
+// TODO: add CMakeLists.txt or something similar for generated code
+
 QString ClassAnalyzer::clamsFix(QString allText, QString text)
 {
   int clam = 0;

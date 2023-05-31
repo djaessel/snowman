@@ -183,7 +183,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/nc/config.h.in" "${CMAKE_CURRENT_BIN
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # classner
-add_subdirectory(classner_module)
+add_subdirectory(classner)
 
 add_subdirectory(nc)
 add_subdirectory(nocode)

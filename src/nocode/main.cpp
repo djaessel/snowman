@@ -61,15 +61,15 @@
 #include <QElapsedTimer>
 #include <QString>
 
-#include "classner_module/classner.h"
-#include "classner_module/rawclass.h"
-#include "classner_module/structer.h"
-#include "classner_module/classstorer.h"
-#include "classner_module/classreader.h"
-#include "classner_module/reinterpretalter.h"
-#include "classner_module/functionanalyzer.h"
-#include "classner_module/classanalyzer.h"
-#include "classner_module/gotogo.h"
+#include "classner/classner.h"
+#include "classner/rawclass.h"
+#include "classner/structer.h"
+#include "classner/classstorer.h"
+#include "classner/classreader.h"
+#include "classner/reinterpretalter.h"
+#include "classner/functionanalyzer.h"
+#include "classner/classanalyzer.h"
+#include "classner/gotogo.h"
 
 static bool skipClassWrite = false;
 static bool skipReinterpret = false;

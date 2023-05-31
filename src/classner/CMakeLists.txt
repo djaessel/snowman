@@ -36,10 +36,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 qt4_wrap_cpp(SOURCES OPTIONS -DQ_MOC_RUN)
 
-add_library(classner_module STATIC ${SOURCES})
+add_library(classner STATIC ${SOURCES})
 
-set_property(TARGET classner_module PROPERTY CXX_STANDARD 17)
-set_property(TARGET classner_module PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET classner PROPERTY CXX_STANDARD 17)
+set_property(TARGET classner PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(classner_module Qt5::Core)
+target_link_libraries(classner Qt5::Core)
 
