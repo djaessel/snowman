@@ -13,9 +13,6 @@ map<QString, QStringList> FunctionAnalyzer::addUsedClassImports(map<QString, Fix
   //    includes.insert_or_assign(cls.first, this->addUsedClassImports(cls.first, classes, rawClasses));
   //}
 
-  // TODO: add support for array of class objects that are with hard coded calculations
-  // TODO: add support for all kinds of class memebers
-
   uint processor_count = processorCount();
   int length = classes->size() / processor_count;
   for (uint i = 0; i < processor_count; i++) {
@@ -34,6 +31,9 @@ map<QString, QStringList> FunctionAnalyzer::addUsedClassImports(map<QString, Fix
 
   return includes;
 }
+
+// TODO: add support for array of class objects that are with hard coded calculations
+// TODO: add support for all kinds of class memebers
 
 void FunctionAnalyzer::addUsedCLassImportsHelper(QStringList *includes, map<QString, FixedClass> *classes, QString line, bool sec)
 {
