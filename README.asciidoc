@@ -22,11 +22,16 @@ Classner extension
 With this now extension the decompiler automatically tries to create C++ classes based on the originally decompiled code.
 When there is enough information given, it might be able to recreate the original class structure as close as possible
 But this extension is still in its early stages, so be kind and also let me know about bugs and suggestions, if you want to. :)
-
+  
+'''Edit: Be warned, this is experimental ground here and does only work with programs,  
+that still have some kind of debug information -> original class/function names.  
+So be sure to check that first, otherwise the result might look the same or very similar to the original output of snowman.
+This is because at the current state there is not the intention to invent class names or demangle structures without clear relation.'''  
+  
 Processing time
 ---------------
 Keep in mind that this extension can take an additionally long time to process and generate everything.
-For a personal project with over 1000 classes it takes around 1 hour, as an example.
+For a personal project with over 1000 classes it takes around 1 hour (16 CPU), as an example.
 But this can vary for project to project and the size and code of the classes etc.
 
 Thoughts and future
@@ -41,6 +46,10 @@ In the end you should have a somewhat decent source code that can compile and ru
 Although for that I mostly have to rely on the existing snowman decompiling and analyzing functions and powers, since I just build an extension on top of it mainly.
 
 Depending on my mood and time and will and what else might happen, it could also be that this project, like so many, will fade into the sand earlier than expected, well or melt, staying with the original name. ^^
+  
+'''Edit: In the future it might be possible to also create relations to functions without debug/original class names.  
+But it might never happen, given the time it might consume to make it happen.  
+So you are happy to join the team and make it happen of course. :)'''  
 
 Standalone
 ----------
