@@ -19,7 +19,7 @@ Write to our link:http://lists.derevenets.com/mailman/listinfo/snowman[mailing l
 
 Classner extension
 ==================
-With this now extension the decompiler automatically tries to create C++ classes based on the originally decompiled code.
+With this new extension the decompiler automatically tries to create C++ classes based on the originally decompiled code.
 When there is enough information given, it might be able to recreate the original class structure as close as possible
 But this extension is still in its early stages, so be kind and also let me know about bugs and suggestions, if you want to. :)
   
