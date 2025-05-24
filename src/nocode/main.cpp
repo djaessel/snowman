@@ -177,7 +177,7 @@ void help() {
          << "When a file name is '-' or omitted, stdout is used." << '\n'
          << '\n';
 
-    const char* classnerVersion = "v0.0.5"; // hardcoded for now, later automatically generate or something
+    const char* classnerVersion = "v0.0.5.1"; // hardcoded for now, later automatically generate or something
     qout << "Version: " << branding.applicationVersion() << '\n';
     qout << "Extensions:" << '\n';
     qout << " - Classner Version: " << classnerVersion << '\n';
@@ -523,7 +523,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (autoDefault) {
-            cxxFile = "-";
+            cxxFile = "main.cpp"; // was "-"
         }
 
         if (files.empty()) {
@@ -549,6 +549,8 @@ int main(int argc, char *argv[]) {
         openFileForWritingAndCall(sectionsFile, [&](QTextStream &out) { printSections(context, out); });
         openFileForWritingAndCall(symbolsFile, [&](QTextStream &out) { printSymbols(context, out); });
 
+        qout << "Will write decompiled source to " << cxxFile << Qt::endl;
+
         if (!instructionsFile.isEmpty() || !cfgFile.isEmpty() || !irFile.isEmpty() || !regionsFile.isEmpty() || !cxxFile.isEmpty()) {
             if(from_addr && to_addr)
             {
@@ -556,8 +558,9 @@ int main(int argc, char *argv[]) {
                     if( from_addr >= section->addr() && to_addr <= section->endAddr() )
                         nc::core::Driver::disassemble(context, section, from_addr, to_addr);
             }
-            else
+            else {
                 nc::core::Driver::disassemble(context);
+            }
 
             openFileForWritingAndCall(instructionsFile, [&](QTextStream &out) { context.instructions()->print(out); });
 

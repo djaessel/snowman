@@ -225,46 +225,63 @@ void MasterAnalyzer::generateTree(Context &context) const {
 void MasterAnalyzer::decompile(Context &context) const {
     context.logToken().info(tr("Decompiling."));
 
+    QTextStream qout(stdout, QIODevice::WriteOnly);
+
+    qout << "Create Program" << Qt::endl;
     createProgram(context);
     context.cancellationToken().poll();
 
+    qout << "Create Functions" << Qt::endl;
     createFunctions(context);
     context.cancellationToken().poll();
 
+    qout << "Create Hooks" << Qt::endl;
     createHooks(context);
     context.cancellationToken().poll();
 
+    qout << "Detect calling conventions" << Qt::endl;
     detectCallingConventions(context);
     context.cancellationToken().poll();
 
+    qout << "Data flow analysis" << Qt::endl;
     dataflowAnalysis(context);
     context.cancellationToken().poll();
 
+    qout << "Liveness analysis" << Qt::endl;
     livenessAnalysis(context);
     context.cancellationToken().poll();
 
+    qout << "Reconstruct signatures" << Qt::endl;
     reconstructSignatures(context);
     context.cancellationToken().poll();
 
+    qout << "Data flow analysis (2)" << Qt::endl;
     dataflowAnalysis(context);
     context.cancellationToken().poll();
 
+    qout << "Reconstruct variables" << Qt::endl;
     reconstructVariables(context);
     context.cancellationToken().poll();
 
+    qout << "Structural analysis" << Qt::endl;
     structuralAnalysis(context);
     context.cancellationToken().poll();
 
+    qout << "Liveness analysis (2)" << Qt::endl;
     livenessAnalysis(context);
     context.cancellationToken().poll();
 
+    qout << "Reconstruct types" << Qt::endl;
     reconstructTypes(context);
     context.cancellationToken().poll();
 
+    qout << "Generate tree" << Qt::endl;
     generateTree(context);
     context.cancellationToken().poll();
 
     context.logToken().info(tr("Decompilation completed."));
+
+    //qout.reset();
 }
 
 QString MasterAnalyzer::getFunctionName(Context &context, const ir::Function *function) const {

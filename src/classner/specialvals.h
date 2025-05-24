@@ -6,6 +6,8 @@
 
 #include <thread>
 
+#define uint uint32_t
+
 uint processorCount();
 
 #endif // SPECIALVALS_H
