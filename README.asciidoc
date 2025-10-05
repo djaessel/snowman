@@ -58,3 +58,10 @@ This project also has a standalone version, in case you have your own version of
 Snowman-Clang-Classner: https://github.com/djaessel/snowman-clang-classner
 
 (It both has a python and a C++ version - on which this extension is based on.)
+
+
+EDIT: Current changes are not in this git repo yet. It is not much, but currently changes are only private for now.
+
+I might publish them at some point, should I have more and be sure it makes sense to do so.
+
+Thanks for reading :)
