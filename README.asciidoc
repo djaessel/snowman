@@ -57,3 +57,50 @@ EDIT: Current changes are not in this git repo yet. It is not much, but currentl
 I might publish them at some point, should I have more and be sure it makes sense to do so.
 
 Thanks for reading :)
+
+---
+
+EDIT (03-2026):
+I currently try to rewrite some of the code of snowman, the actual snowman code not just my own.
+
+These changes probably will be published on a separate website which I will link here once it is time. (In case something useful actually comes from what I am trying).
+
+The goal is to optimize the overall performance and RAM usage. The snowman can hopefully also be used on smaller or not so new and over-powered PCs and boards.
+
+I originally started this project because of a game and still use it for development as test object for my experiments. The game executable is very big and also the way snowman operated, at least the version I got, the at times had not only used my whole RAM, but also the SWAP (RAM on disk), which were >32GB in total all together.
+
+Obviously some people have maybe 64GB RAM or whatever, but I still want to make it work also on old hardware or less resources in general.
+
+Since maybe at some point there is no new hardware possible or resources are all used up or whatever. And some people only can afford small boards like a raspberry pi or similar, which also became more expensive at times through merchants etc. even when the original goal was to make it cheaper so everyone can get them in a way. They were around 50€ in the beginning or maybe less. Compared to the price of a tower PC (big one that usually was bought in the past for 500€ and upwards), it is almost a gift and for free.
+
+Obviously it has some downside with performance. But that can be solved with better programming. :)
+
+I wouod love a world in which women are not bound to a man's decisions and also a world in which men are more intelligent in a good way, to help and not just take. As some do, but still not enough. And obviously a world in which nature in all its forms is noticed again and not forgotten and children learn how to live with nature and coexist somehow in general.
+
+Development of software can be a part of it, even when others use it to control and harm some people for whatever reasons. As long as people need and use devices that are with some sort of computer chip inside, people like me are needed.
+
+Even when I am insane and should not exist because of my brain damages. ^^
+
+Anyway...
+I would have optimized other software as well and even wrote more of my own. But my brain kept telling me to not do it. Since then big companies would probably just steel it through their "AI" that collects the data of actual people and the creates stuff from it. Obviously without giving the people credit nor money or whatsoever.
+
+And snowman decompiler already has a fitting name for it. It is as the name says a snowman, so it melts in the warmth of the sun in spring at last. Why do we build it anyway (at least in places which still have snow at times)? Just for fun in a way, knowing it melts anyway and is gone at some point, like many things we did and do and sadly even us ourselves.
+Still we build it and use it to make life more alive and interesting.
+
+Since otherwise what else is there?
+Probably only mass consumption and destruction and a lot of suffering people... together with nature as a whole. :/
+
+If we would not live in a world that is so much about speed, always having to give all you have to survive and then die anyway at some point and so many things women have to go through without wanting it always. It could be a kind of paradise, at least for some.
+
+As if we claimed hell itself and made it ours, since the heavens of some were hell for us. Maybe it becomes a kind of heaven, a more natural one and one with freedom and people and other beings actually trying to care for each other and not just pretend, as many do. Often out of self-defense maybe, but not always obviously.
+
+I am a monster that was formed in the depths of this hell. And still I am dumb enough to say these things, knowing it's probably like screaming in a storm, when noone hears it and sees it.
+
+I hate myself for being this monster.
+But it seemed only the "devils" win here.
+I probably will die because of my decisions. At some point we all do eventually, but hopefully before that day and maybe in a possible new life at some point after that, we can actually wake up in a way and change what we can change.
+
+Cruel people who only want power over others and hide somewhere as the scared people they are deep down but still very dangerous at other times. Maybe they also will wake up at some point, but probably I am just too naive and optimistic here. ^^
+
+Probably they just use me and others all up and then live on happily ever after, when we are long dead and forgotten.
+Like a snowman :)
